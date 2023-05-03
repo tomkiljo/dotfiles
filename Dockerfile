@@ -15,6 +15,6 @@ FROM base
 
 COPY . dotfiles
 WORKDIR /home/dotfiles/dotfiles
-RUN . ~/.profile && task install
+RUN . ~/.profile && task all
 
 CMD ["/bin/bash", "-l"]
