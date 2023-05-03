@@ -1,0 +1,14 @@
+version: "3"
+
+includes:
+  base: tasks/base
+  tmux: tasks/tmux
+  nvm: tasks/nvm
+
+tasks:
+  all:
+    desc: "Setup everything"
+    cmds:
+      - task: base:install
+      - task: tmux:install
+      - task: nvm:install

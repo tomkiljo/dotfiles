@@ -1,0 +1,25 @@
+version: "3"
+
+tasks:
+  install:
+    desc: "Install base"
+    cmds:
+      - task: install-pkgs
+      - task: install-gomplate
+      - task: configure-task
+  install-pkgs:
+    cmds:
+      - sudo apt-get update
+      - sudo apt-get install -y bash-completion git jq
+  install-gomplate:
+    cmds:
+      - curl -o ~/.local/bin/gomplate -sSL https://github.com/hairyhenderson/gomplate/releases/download/{{.VERSION}}/gomplate_{{OS}}-{{ARCH}}
+      - chmod 755 ~/.local/bin/gomplate
+      - gomplate --version
+    vars:
+      VERSION:
+        sh: curl -sSL https://api.github.com/repos/hairyhenderson/gomplate/releases/latest | jq -r '.tag_name'
+  configure-task:
+    cmds:
+      - mkdir -p ~/.local/share/bash-completion/completions
+      - curl -o ~/.local/share/bash-completion/completions/task.bash https://raw.githubusercontent.com/go-task/task/main/completion/bash/task.bash
