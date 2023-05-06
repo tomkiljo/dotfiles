@@ -9,8 +9,9 @@ tasks:
       - task: configure
   install-tmux:
     cmds:
-      - sudo apt-get update
-      - sudo apt-get install -y tmux acpi
+      - task: :apt-install
+        vars:
+          PACKAGES: tmux acpi
   install-tpm:
     cmds:
       - mkdir -p ~/.tmux/plugins

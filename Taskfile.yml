@@ -3,7 +3,7 @@ version: "3"
 includes:
   base: tasks/base
   tmux: tasks/tmux
-  nvm: tasks/nvm
+  nvim: tasks/nvim
 
 tasks:
   all:
@@ -11,4 +11,25 @@ tasks:
     cmds:
       - task: base:install
       - task: tmux:install
-      - task: nvm:install
+      - task: nvim:install
+
+  # Test locally with docker
+  test:
+    interactive: true
+    cmds:
+      - docker build -t dotfiles:test .
+      - docker run -it --rm dotfiles:test
+
+  # Utils to simplify and speed up apt-get installs
+  apt-install:
+    internal: true
+    deps: [apt-update]
+    cmds:
+      - sudo apt-get install -y {{.PACKAGES}}
+    preconditions:
+      - test -n "{{.PACKAGES}}"
+  apt-update:
+    internal: true
+    cmds:
+      - sudo apt-get update
+    run: once

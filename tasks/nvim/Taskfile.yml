@@ -1,0 +1,32 @@
+version: "3"
+
+tasks:
+  install:
+    desc: "Install neovim"
+    cmds:
+      - task: install-nvim
+      - task: configure
+  install-nvim:
+    cmds:
+      - |
+        sudo mkdir -p /opt
+        if [ -d /opt/nvim ] ; then
+          sudo rm -rf /opt/nvim
+        fi
+      - |
+        curl -sSLO https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz
+        tar -xzf nvim-linux64.tar.gz && rm nvim-linux64.tar.gz
+        sudo mv nvim-linux64 /opt/nvim
+        sudo ln -s /opt/nvim/bin/nvim /usr/bin/nvim
+        nvim --version
+  configure:
+    cmds:
+      - |
+        if [ -d ~/.config/nvim ] ; then
+          tar -czf ~/.config/nvim.$(date +"%Y%m%d%H%M%S").tar.gz ~/.config/nvim
+          rm -rf ~/.config/nvim
+          rm -rf ~/.config/nvim/lazy-lock.json
+          rm -rf ~/.local/share/nvim/lazy
+          rm -rf ~/.local/state/nvim/lazy
+        fi
+      - git clone https://github.com/tomkiljo/kickstart.nvim.git ~/.config/nvim

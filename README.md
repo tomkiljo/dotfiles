@@ -8,6 +8,6 @@ Task can be installed by running `./setup.sh`.
 Available tasks:
 
 - all: Setup everything
-- base:install: Install base
-- nvm:install: Install nvm
-- tmux:install: Install tmux
+- base:install: Install base and setup base config
+- nvim:install: Install and setup nvim
+- tmux:install: Install and setup tmux

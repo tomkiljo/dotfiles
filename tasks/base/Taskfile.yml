@@ -6,20 +6,38 @@ tasks:
     cmds:
       - task: install-pkgs
       - task: install-gomplate
+      - task: install-nvm
+      - task: configure-ssh
       - task: configure-task
   install-pkgs:
     cmds:
-      - sudo apt-get update
-      - sudo apt-get install -y bash-completion git jq
+      - task: :apt-install
+        vars:
+          PACKAGES: bash-completion git jq build-essential
   install-gomplate:
     cmds:
+      - mkdir -p ~/.local/bin
       - curl -o ~/.local/bin/gomplate -sSL https://github.com/hairyhenderson/gomplate/releases/download/{{.VERSION}}/gomplate_{{OS}}-{{ARCH}}
       - chmod 755 ~/.local/bin/gomplate
       - gomplate --version
     vars:
       VERSION:
         sh: curl -sSL https://api.github.com/repos/hairyhenderson/gomplate/releases/latest | jq -r '.tag_name'
+  install-nvm:
+    cmds:
+      - curl -o- -sSL https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+  configure-ssh:
+    cmds:
+      - mkdir -p ~/.ssh && touch ~/.ssh/known_hosts
+      - |
+        if ! ls ~/.ssh/*.pub >/dev/null 2>&1 ; then
+          ssh-keygen -t ed25519 -C "$(whoami)@$(hostname)" -f ~/.ssh/id_ed25519
+        fi
+      - |
+        if ! ssh-keygen -F github.com > /dev/null ; then
+          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+        fi
   configure-task:
     cmds:
       - mkdir -p ~/.local/share/bash-completion/completions
-      - curl -o ~/.local/share/bash-completion/completions/task.bash https://raw.githubusercontent.com/go-task/task/main/completion/bash/task.bash
+      - curl -o ~/.local/share/bash-completion/completions/task.bash -sSL https://raw.githubusercontent.com/go-task/task/main/completion/bash/task.bash
