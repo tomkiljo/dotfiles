@@ -1,0 +1,12 @@
+# $XDG_CONFIG_HOME/k9s/hotkey.yml
+hotKey:
+  # Hitting Shift-1 navigates to your deployments
+  shift-1:
+    shortCut: Shift-1
+    description: View deployments
+    command: dp
+  # Hitting Shift-2 navigates to your pod view
+  shift-2:
+    shortCut: Shift-2
+    description: Viewing pods
+    command: pods

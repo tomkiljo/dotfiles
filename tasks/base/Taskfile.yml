@@ -5,27 +5,22 @@ tasks:
     desc: "Install base"
     cmds:
       - task: install-pkgs
-      - task: install-gomplate
-      - task: install-nvm
+      - task: configure-bash
       - task: configure-ssh
       - task: configure-task
+      - task: install-gomplate
+      - task: install-nvm
   install-pkgs:
     cmds:
       - task: :apt-install
         vars:
-          PACKAGES: bash-completion git jq build-essential
-  install-gomplate:
+          PACKAGES: bash-completion git jq build-essential openssh-client
+  configure-bash:
+    dir: tasks/base
     cmds:
-      - mkdir -p ~/.local/bin
-      - curl -o ~/.local/bin/gomplate -sSL https://github.com/hairyhenderson/gomplate/releases/download/{{.VERSION}}/gomplate_{{OS}}-{{ARCH}}
-      - chmod 755 ~/.local/bin/gomplate
-      - gomplate --version
-    vars:
-      VERSION:
-        sh: curl -sSL https://api.github.com/repos/hairyhenderson/gomplate/releases/latest | jq -r '.tag_name'
-  install-nvm:
-    cmds:
-      - curl -o- -sSL https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+      - mkdir -p ~/.bashrc.d
+      - cp -f bashrc ~/.bashrc
+      - cp -f bash_profile ~/.bash_profile
   configure-ssh:
     cmds:
       - mkdir -p ~/.ssh && touch ~/.ssh/known_hosts
@@ -41,3 +36,29 @@ tasks:
     cmds:
       - mkdir -p ~/.local/share/bash-completion/completions
       - curl -o ~/.local/share/bash-completion/completions/task.bash -sSL https://raw.githubusercontent.com/go-task/task/main/completion/bash/task.bash
+  install-gomplate:
+    cmds:
+      - mkdir -p ~/.local/bin
+      - curl -o ~/.local/bin/gomplate -sSL https://github.com/hairyhenderson/gomplate/releases/download/{{.VERSION}}/gomplate_{{OS}}-{{ARCH}}
+      - chmod 755 ~/.local/bin/gomplate
+      - gomplate --version
+    vars:
+      VERSION:
+        sh: curl -sSL https://api.github.com/repos/hairyhenderson/gomplate/releases/latest | jq -r '.tag_name'
+  install-nvm:
+    dir: tasks/base
+    env:
+      NVM_DIR: "{{.HOME}}/.nvm"
+    cmds:
+      - |
+        if ! [ -d $NVM_DIR ] ; then
+          git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR"
+          cd $NVM_DIR
+        else
+          cd $NVM_DIR
+          git fetch
+          git restore . && git clean -f
+        fi
+        git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
+      - . $NVM_DIR/nvm.sh && nvm --version
+      - cp -f nvm.bashrc ~/.bashrc.d/80_nvm.bashrc

@@ -6,19 +6,17 @@ tasks:
     cmds:
       - task: install-tmux
       - task: install-tpm
-      - task: configure
   install-tmux:
+    dir: "tasks/tmux"
     cmds:
       - task: :apt-install
         vars:
           PACKAGES: tmux acpi
+      - cp -f tmux.conf ~/.tmux.conf
   install-tpm:
     cmds:
       - mkdir -p ~/.tmux/plugins
       - git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+      - ~/.tmux/plugins/tpm/bin/install_plugins
     status:
       - test -d ~/.tmux/plugins/tpm
-  configure:
-    dir: "tasks/tmux"
-    cmds:
-      - gomplate -f tmux.conf.template -o ~/.tmux.conf

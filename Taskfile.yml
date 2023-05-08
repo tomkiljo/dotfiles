@@ -2,6 +2,7 @@ version: "3"
 
 includes:
   base: tasks/base
+  kube: tasks/kube
   tmux: tasks/tmux
   nvim: tasks/nvim
 
@@ -10,6 +11,7 @@ tasks:
     desc: "Setup everything"
     cmds:
       - task: base:install
+      - task: kube:install
       - task: tmux:install
       - task: nvim:install
 

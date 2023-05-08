@@ -1,0 +1,38 @@
+version: "3"
+
+tasks:
+  install:
+    desc: Install k8s tools
+    cmds:
+      - task: install-kubectl
+      - task: install-krew
+      - task: install-k9s
+  install-kubectl:
+    dir: tasks/kube
+    cmds:
+      - mkdir -p ~/.local/bin
+      - curl -o ~/.local/bin/kubectl -sSL "https://dl.k8s.io/release/$(curl -sSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      - chmod 755 ~/.local/bin/kubectl
+      - kubectl version --client
+      - cp kubectl.bashrc ~/.bashrc.d/80_kubectl.bashrc
+  install-krew:
+    dir: tasks/kube
+    cmds:
+      - curl -sSL "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-{{OS}}_{{ARCH}}.tar.gz" | tar -xz -C ~
+      - ~/krew-{{OS}}_{{ARCH}} install krew && rm -f ~/krew-{{OS}}_{{ARCH}}
+      - ~/.krew/bin/kubectl-krew version
+      - ~/.krew/bin/kubectl-krew install ctx
+      - ~/.krew/bin/kubectl-krew install ns
+      - cp krew.bashrc ~/.bashrc.d/90_krew.bashrc
+  install-k9s:
+    dir: tasks/kube
+    cmds:
+      - mkdir -p ~/.local/bin
+      - curl -sSL https://github.com/derailed/k9s/releases/download/{{.VERSION}}/k9s_{{OS}}_{{ARCH}}.tar.gz | tar -xz -C ~/.local/bin k9s
+      - chmod 755 ~/.local/bin/k9s
+      - k9s version
+      - mkdir -p ~/.config/k9s
+      - cp -f k9s/* ~/.config/k9s
+    vars:
+      VERSION:
+        sh: curl -sSL https://api.github.com/repos/derailed/k9s/releases/latest | jq -r '.tag_name'
