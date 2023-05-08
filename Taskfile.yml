@@ -3,6 +3,7 @@ version: "3"
 includes:
   base: tasks/base
   kube: tasks/kube
+  lang: tasks/lang
   tmux: tasks/tmux
   nvim: tasks/nvim
 
@@ -12,6 +13,7 @@ tasks:
     cmds:
       - task: base:install
       - task: kube:install
+      - task: lang:install
       - task: tmux:install
       - task: nvim:install
 

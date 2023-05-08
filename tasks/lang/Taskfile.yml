@@ -1,0 +1,30 @@
+version: "3"
+
+tasks:
+  install:
+    desc: Install language tools
+    cmds:
+      - task: install-nvm
+      - task: install-rust
+  install-nvm:
+    dir: tasks/lang
+    env:
+      NVM_DIR: "{{.HOME}}/.nvm"
+    cmds:
+      - |
+        if ! [ -d $NVM_DIR ] ; then
+          git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR"
+          cd $NVM_DIR
+        else
+          cd $NVM_DIR
+          git fetch
+          git restore . && git clean -f
+        fi
+        git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
+      - . $NVM_DIR/nvm.sh && nvm --version
+      - cp -f nvm.bashrc ~/.bashrc.d/80_nvm.bashrc
+  install-rust:
+    dir: tasks/lang
+    cmds:
+      - curl https://sh.rustup.rs -sSf | bash -s -- -y --no-modify-path
+      - cp -f rust.bashrc ~/.bashrc.d/80_rust.bashrc

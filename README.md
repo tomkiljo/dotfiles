@@ -7,8 +7,9 @@ Task can be installed by running `./setup.sh`.
 
 Available tasks:
 
-* all:          Setup everything
-* base:install: Install base
-* kube:install: Install k8s tools
-* nvim:install: Install neovim
-* tmux:install: Install tmux
+- all: Setup everything
+- base:install: Install base
+- kube:install: Install k8s tools
+- lang:install: Install language tools
+- nvim:install: Install neovim
+- tmux:install: Install tmux
