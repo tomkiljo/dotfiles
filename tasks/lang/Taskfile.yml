@@ -4,8 +4,17 @@ tasks:
   install:
     desc: Install language tools
     cmds:
+      - task: install-go
       - task: install-nvm
       - task: install-rust
+  install-go:
+    dir: tasks/lang
+    cmds:
+      - rm -rf ~/.local/go
+      - mkdir -p ~/.local
+      - curl -sSL https://go.dev/dl/go1.20.4.{{OS}}-{{ARCH}}.tar.gz | tar -xz -C ~/.local
+      - cp -f go.bashrc ~/.bashrc.d/80_go.bashrc
+      - ~/.local/go/bin/go version
   install-nvm:
     dir: tasks/lang
     env:
@@ -21,10 +30,11 @@ tasks:
           git restore . && git clean -f
         fi
         git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
-      - . $NVM_DIR/nvm.sh && nvm --version
       - cp -f nvm.bashrc ~/.bashrc.d/80_nvm.bashrc
+      - . $NVM_DIR/nvm.sh && nvm --version
   install-rust:
     dir: tasks/lang
     cmds:
       - curl https://sh.rustup.rs -sSf | bash -s -- -y --no-modify-path
       - cp -f rust.bashrc ~/.bashrc.d/80_rust.bashrc
+      - . rust.bashrc && rustc --version && cargo --version && cargo clippy --version
